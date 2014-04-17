@@ -1,0 +1,78 @@
+This is project for final assignment of CS655
+By Yuan Lu
+It was to code the Lisp metacircular interpreter in Java.
+
+I don't like many java files, thus I put all files into one Java file
+"LISP.java"
+and a very simple Makefile
+To compile my project. just type
+make
+To run my project, just type
+java LISP
+
+I am sort of running out of time when I was doing this final project.
+So I didn't have much time to polish it. (I am sorry!)
+
+After starting my project, it will print 
+>>>
+and wait for your input.
+
+Be sure to only input one piece of lisp code. If you are going to to declare 
+functions. Be sure to declare only one each time.
+
+For example:
+>>>     (defun test1 (A)
+                (cond
+                        ((eq A 1) nil)
+                        (T A)
+                )
+        )
+>>>     (defun lastElt (L)
+                (cond
+                        ((null L) nil)
+                        ((null (cdr L)) (car L))
+                        (T (lastElt (cdr L)))
+                )
+        )
+
+If your input is like
+>>> (cons 1
+It will wait until ')' shows up
+
+After the input, it will print the AST tree of the input code and answer
+For example,
+>>>(cons 'a nil)
+[CONS 'a NIL]
+ANS:
+[a NIL]
+
+It can also output error message if it cannot evaluate the code
+>>>(cons 'a 1)
+[CONS 'a 1 ]
+ANS:
+Wrong input
+Second param of cons is not list
+
+To implement the Lisp metacircular interpreter, please open the file 
+"lispInterpreter", copy each piece of defun into input.
+
+After all is done, you can eval it by using examples
+>>>(myEval 4 nil)
+>>>(myEval '(car '(a b)) nil)
+>>>(myEval '((lambda (x) (car x)) '(a b c)) nil)
+
+There are some differences between my lisp and the real one,
+For example, I did not hava rational number.
+I did not have operators like "+","-",">" and so on
+The only one I implemented was "eq"
+And I cannot cons a element to an atom
+
+However, it had all we need for interpreter. (except "get")
+
+I found that to desgin a compiler is really a interesting thing.
+I hope I can share how I design it (the way to build a syntax tree, the way to
+represent the tree, the way to "quote" which took me a long time, the reason to
+introduce "asdata", and the way to build functions) someday.
+
+Thanks.
+

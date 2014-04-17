@@ -1,0 +1,67 @@
+(defun myEval (myList Env) ;  evaluate myList in Env
+	(cond
+		((null myList) nil)
+		((numberp myList) myList)        ; Dieter added this
+		((stringp myList) myList)        ; Dieter added this
+		((eq t myList) t)           ; Dieter added this
+		((atom myList) (Lookup myList Env)) ; shortened from book
+		((eq (car myList) (quote quote)) (car (cdr myList)))
+		((eq (car myList) (quote cond)) (EvalCond (cdr myList) Env))
+		(t (myApply (car myList) (EvalList (cdr myList) Env) Env))
+	)
+) ; myEval
+(defun myApply (Fct Parms Env) ;  apply Fct to Parms
+	(cond
+		((atom Fct) (cond
+			((eq Fct (quote car)) (car (car Parms)))
+			((eq Fct (quote cdr)) (cdr (car Parms)))
+			((eq Fct (quote cons))
+				(cons (car Parms) (car (cdr Parms))))
+			; ignoring get
+			((eq Fct (quote atom)) (atom (car Parms)))
+			((eq Fct (quote error)) (error (car Parms)))
+			((eq Fct (quote eq))
+				(eq (car Parms) (car (cdr Parms))))
+			(t (myApply (Lookup Fct Env) Parms Env)) ; shortened from book
+		)) ; case (atom Fct) 
+		((eq (car Fct) (quote lambda))
+		 	; Fct looks like this: (lambda (formals) (body))
+			(myEval (car (cdr (cdr Fct))) (Update (car (cdr Fct)) Parms Env))
+		)
+		(t (myApply (myEval Fct Env) Parms Env))
+	)
+) ; myApply
+(defun EvalCond (Conds Env) ;  evaluate cond
+	(cond
+		((null Conds) nil) ;  could treat as error
+		((myEval (car (car Conds)) Env) (myEval (car (cdr (car Conds))) Env))
+		(t (EvalCond (cdr Conds) Env))
+	)
+) ; EvalCond
+
+(defun EvalList (myList Env) ;  evaluate list
+	(cond
+		((null myList) nil)
+		(t (cons (myEval (car myList) Env) (EvalList (cdr myList) Env)))
+	)
+) ; EvalList
+(defun lookup (id env)          ; lookup id
+  (cond
+   ((null env) (error "Unbound variable: ~S" id))
+   ((eq id (car (car env))) (car (cdr (car env))))
+   (t (lookup id (cdr env)))))
+
+(defun update (formals vals env)    ; bind parameters
+  (cond
+   ((null formals)
+    (cond ((null vals) env)
+      (t (error "bad argument count"))))
+   ((null vals) (error "bad argument count"))
+   (t (cons (cons (car formals)
+          (cons (car vals) nil))
+        (update (cdr formals) (cdr vals) env)))))
+
+; some test cases
+; (myEval 4 nil)
+; (myEval '(car '(a b)) nil)
+; (myEval '((lambda (x) (car x)) '(a b c)) nil)
