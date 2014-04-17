@@ -1,6 +1,6 @@
 This is project for final assignment of CS655
 By Yuan Lu
-It was to code the Lisp metacircular interpreter in Java.
+It implement deep binding and  Lisp metacircular interpreter.
 
 I don't like many java files, thus I put all files into one Java file
 "LISP.java"
